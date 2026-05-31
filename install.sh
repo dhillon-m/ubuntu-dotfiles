@@ -39,6 +39,9 @@ link_dir() {
 setup_repos() {
     heading "Repositories"
 
+    # universe contains keyd, gtklock, and many other needed packages
+    sudo add-apt-repository -y universe
+
     if ! apt-cache policy 2>/dev/null | grep -q "papirus"; then
         sudo add-apt-repository -y ppa:papirus/papirus
         info "Added Papirus PPA"
@@ -108,7 +111,7 @@ install_apt() {
         sassc
 
         # Apps
-        gamemode thunar nautilus vesktop vlc
+        gamemode thunar nautilus vlc
     )
 
     sudo apt-get install -y --no-install-recommends "${pkgs[@]}" \
@@ -117,6 +120,22 @@ install_apt() {
     # gtklock: try apt, suggest source build if unavailable
     if ! sudo apt-get install -y gtklock 2>/dev/null; then
         warn "gtklock not in apt repos. Build from: https://github.com/jovanlanik/gtklock"
+    fi
+
+    # Vesktop (Discord client) — download latest .deb from GitHub releases
+    if ! dpkg -l vesktop &>/dev/null; then
+        local vd_ver
+        vd_ver=$(curl -s https://api.github.com/repos/Vencord/Vesktop/releases/latest \
+                  | grep '"tag_name"' | cut -d'"' -f4 | tr -d 'v')
+        local vd_deb="vesktop_${vd_ver}_amd64.deb"
+        wget -q --show-progress \
+            -O "/tmp/$vd_deb" \
+            "https://github.com/Vencord/Vesktop/releases/download/v${vd_ver}/$vd_deb" \
+            && sudo dpkg -i "/tmp/$vd_deb" && rm "/tmp/$vd_deb" \
+            && ok "Vesktop installed" \
+            || warn "Vesktop install failed — download manually from https://github.com/Vencord/Vesktop/releases"
+    else
+        info "Vesktop already installed"
     fi
 
     ok "APT packages installed"
