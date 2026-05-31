@@ -35,11 +35,19 @@ link_dir() {
     ln -sfn "$src" "$dst"
 }
 
+# ── 0. Bootstrap essentials ──────────────────────────────────────────────────
+bootstrap() {
+    heading "Bootstrap"
+    sudo apt-get update -q
+    sudo apt-get install -y curl wget git
+    ok "Bootstrap done"
+}
+
 # ── 1. External repositories ─────────────────────────────────────────────────
 setup_repos() {
     heading "Repositories"
 
-    # universe contains keyd, gtklock, and many other needed packages
+    # universe contains gtklock and many other needed packages
     sudo add-apt-repository -y universe
 
     if ! apt-cache policy 2>/dev/null | grep -q "papirus"; then
@@ -83,7 +91,7 @@ install_apt() {
         qt5-gtk-platformtheme qt6-gtk-platformtheme
 
         # Display / input utilities
-        ddcutil i2c-tools keyd read-edid
+        ddcutil i2c-tools read-edid
 
         # CLI tools
         btop fastfetch micro chafa jq curl wget git
@@ -277,11 +285,6 @@ link_dotfiles() {
 setup_system() {
     heading "System config"
 
-    sudo mkdir -p /etc/keyd
-    sudo cp "${REPO}/etc/keyd/default.conf" /etc/keyd/default.conf
-    sudo systemctl enable --now keyd
-    ok "keyd configured and enabled"
-
     sudo cp "${REPO}/etc/udev/rules.d/60-ddcutil-i2c.rules" /etc/udev/rules.d/
     sudo cp "${REPO}/etc/udev/hwdb.d/99-mouse-remap.hwdb"   /etc/udev/hwdb.d/
     sudo systemd-hwdb update
@@ -342,6 +345,7 @@ main() {
         esac
     done
 
+    bootstrap
     $skip_repos  || setup_repos
     $skip_apt    || install_apt
     $skip_snaps  || install_snaps
