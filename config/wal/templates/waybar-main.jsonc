@@ -5,10 +5,26 @@
   "margin-top": 5,
   "margin-left": 5,
   "margin-right": 5,
-  "modules-left": ["custom/windows","sway/workspaces","sway/window","tray","sway/mode"],
-  "modules-center": ["clock"],
-  "modules-right": ["custom/cpu","custom/gpu","custom/memory","disk","custom/network","custom/vpn","pulseaudio","custom/battery"],
-
+  "modules-left": [
+    "custom/windows",
+    "sway/workspaces",
+    "sway/window",
+    "tray",
+    "sway/mode"
+  ],
+  "modules-center": [
+    "clock"
+  ],
+  "modules-right": [
+    "custom/cpu",
+    "custom/gpu",
+    "custom/memory",
+    "disk",
+    "custom/network",
+    "custom/vpn",
+    "pulseaudio",
+    "custom/battery"
+  ],
   "custom/windows": {
     "format": "<span ></span>",
     "on-click": "~/.config/waybar/main/scripts/windows-menu.sh",
@@ -21,13 +37,19 @@
     "warp-on-scroll": false,
     "format": "{{icon}}",
     "format-icons": {
-      "1": "<span>☿</span>", "2": "<span>♀</span>", "3": "<span>♁</span>",
-      "4": "<span>☾</span>", "5": "<span>♂</span>", "6": "<span>♃</span>",
-      "7": "<span>♄</span>", "8": "<span>♅</span>", "9": "<span>♆</span>",
+      "1": "<span>☿</span>",
+      "2": "<span>♀</span>",
+      "3": "<span>♁</span>",
+      "4": "<span>☾</span>",
+      "5": "<span>♂</span>",
+      "6": "<span>♃</span>",
+      "7": "<span>♄</span>",
+      "8": "<span>♅</span>",
+      "9": "<span>♆</span>",
       "10": "<span>♇</span>"
     },
     "persistent-workspaces": {
-      "1": ["DP-3"], "3": ["DP-3"], "5": ["DP-3"], "7": ["DP-3"], "9": ["DP-3"]
+      "1": [], "3": [], "5": [], "7": [], "9": []
     }
   },
   "sway/window": {
@@ -35,55 +57,83 @@
     "separate-outputs": true,
     "tooltip": false
   },
-  "sway/mode": {{ "format": " {{}}", "max-length": 50, "tooltip": false }},
-  "tray": {{ "icon-size": 14, "spacing": 8 }},
-  "disk": {{
+  "sway/mode": {
+    "format": " {{}}",
+    "max-length": 50,
+    "tooltip": false
+  },
+  "tray": {
+    "icon-size": 14,
+    "spacing": 8
+  },
+  "disk": {
     "format": "<span color='{background}' bgcolor='{color1}' >  </span> {{free}}",
-    "interval": 20, "tooltip": false
-  }},
-  "custom/cpu": {{
+    "interval": 20,
+    "tooltip": false
+  },
+  "custom/cpu": {
     "exec": "~/.config/waybar/main/scripts/cpu.sh",
-    "return-type": "json", "interval": 2, "format": "{{}}", "tooltip": false,
+    "return-type": "json",
+    "interval": 2,
+    "format": "{{}}",
+    "tooltip": false,
     "on-click": "~/.config/waybar/main/scripts/cpu-btop.sh"
-  }},
-  "custom/gpu": {{
+  },
+  "custom/gpu": {
     "exec": "~/.config/waybar/main/scripts/gpu.sh",
-    "return-type": "json", "interval": 2, "format": "{{}}", "tooltip": false,
+    "return-type": "json",
+    "interval": 2,
+    "format": "{{}}",
+    "tooltip": false,
     "on-click": "~/.config/waybar/main/scripts/gpu-btop.sh"
-  }},
-  "custom/memory": {{
+  },
+  "custom/memory": {
     "exec": "~/.config/waybar/main/scripts/memory.sh",
-    "interval": 2, "return-type": "json",
+    "interval": 2,
+    "return-type": "json",
     "format": "<span color='{background}' bgcolor='{color6}' >  </span> {{}}",
     "on-click": "~/.config/waybar/main/scripts/mem-btop.sh"
-  }},
-  "pulseaudio": {{
+  },
+  "pulseaudio": {
     "format": "<span color='{background}' bgcolor='{color4}' >  </span> {{volume}}%",
     "format-muted": "<span color='{background}' bgcolor='{color1}' >  </span> {{volume}}%",
     "format-bluetooth": "<span color='{background}' bgcolor='{color4}' > 󰂰 </span> {{volume}}%",
     "format-bluetooth-muted": "<span color='{background}' bgcolor='{color1}' > 󰂲 </span> {{volume}}%",
+    "format-source": "{{volume}}% ",
     "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
     "on-click-right": "~/.config/waybar/main/scripts/pavucontrol.sh",
-    "tooltip": false, "max-volume": 130
-  }},
-  "custom/battery": {{
+    "tooltip": false,
+    "max-volume": 130
+  },
+  "custom/battery": {
     "exec": "~/.config/waybar/main/scripts/battery.sh",
-    "return-type": "json", "interval": 5, "format": "{{}}", "tooltip": false
-  }},
-  "custom/network": {{
+    "return-type": "json",
+    "interval": 5,
+    "format": "{{}}",
+    "tooltip": false
+  },
+  "custom/network": {
     "exec": "~/.config/waybar/main/scripts/network.sh",
-    "return-type": "json", "interval": 2, "format": "{{}}", "tooltip": false,
+    "return-type": "json",
+    "interval": 2,
+    "format": "{{}}",
+    "tooltip": false,
     "on-click": "~/.config/waybar/main/scripts/network-toggle.sh",
     "on-click-right": "~/.config/waybar/main/scripts/network-menu.sh"
-  }},
-  "custom/vpn": {{
+  },
+  "custom/vpn": {
     "exec": "~/.config/waybar/main/scripts/vpn.sh",
-    "return-type": "json", "interval": 2, "signal": 4, "format": "{{}}", "tooltip": false,
+    "return-type": "json",
+    "interval": 2,
+    "signal": 4,
+    "format": "{{}}",
+    "tooltip": false,
     "on-click": "~/.config/waybar/main/scripts/vpn-toggle.sh",
     "on-click-right": "~/.config/waybar/main/scripts/vpn-menu.sh"
-  }},
-  "clock": {{
+  },
+  "clock": {
     "format": "<span color='{background}' bgcolor='{color4}' >  </span> {{:%a %d | %H:%M}}",
-    "tooltip": false, "interval": 1
-  }}
+    "tooltip": false,
+    "interval": 1
+  }
 }
