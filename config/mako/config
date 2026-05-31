@@ -1,0 +1,17 @@
+font=Iosevka Nerd Font Propo 12
+background-color=#202020ee
+text-color=#d4be98ff
+border-color=#d4be98ff
+border-size=2
+border-radius=2
+padding=10
+width=300
+height=100
+margin=10
+default-timeout=5000
+ignore-timeout=0
+
+[urgency=high]
+background-color=#ea6962ee
+text-color=#202020ff
+border-color=#ea6962ff

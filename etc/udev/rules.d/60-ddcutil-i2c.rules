@@ -1,0 +1,2 @@
+# Allow non-root access to i2c devices (needed by ddcutil for monitor control)
+KERNEL=="i2c-[0-9]*", TAG+="uaccess"

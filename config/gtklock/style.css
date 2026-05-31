@@ -1,0 +1,79 @@
+/*
+ * Output names in selectors must match your sway output names.
+ * Run: swaymsg -t get_outputs
+ * The installer substitutes HOME_PLACEHOLDER with your actual $HOME.
+ */
+
+window#DP-3 {
+    background-image: url("HOME_PLACEHOLDER/.config/sway/wallpaper_main.jpg");
+    background-size: cover;
+    background-position: center;
+}
+
+window#HDMI-A-1 {
+    background-image: url("HOME_PLACEHOLDER/.config/sway/wallpaper_portrait.jpg");
+    background-size: cover;
+    background-position: center;
+}
+
+/* Hide clock and input on secondary portrait monitor */
+window#HDMI-A-1 #clock-label {
+    font-size: 0;
+}
+
+window#HDMI-A-1 #window-box {
+    opacity: 0;
+}
+
+* {
+    box-shadow: none;
+    font-family: "Iosevka Nerd Font Propo";
+}
+
+#clock-label {
+    font-size: 128px;
+    color: #d4be98;
+    text-shadow: 2px 2px 8px #202020;
+    margin-top: 0.5em;
+}
+
+#input-label {
+    font-size: 0;
+}
+
+#window-box {
+    margin-top: 0em;
+}
+
+#input-field {
+    background-color: #202020;
+    color: #d4be98;
+    border: 2px solid #d4be98;
+    border-radius: 2px;
+    padding: 8px 16px;
+    min-width: 300px;
+    caret-color: #d4be98;
+}
+
+#input-field:focus {
+    border-color: #d4be98;
+}
+
+#error-label {
+    color: #ea6962;
+    font-family: "Iosevka Nerd Font Propo";
+}
+
+button {
+    background-color: #202020;
+    color: #d4be98;
+    border: 2px solid #d4be98;
+    border-radius: 2px;
+    font-family: "Iosevka Nerd Font Propo";
+}
+
+button:hover {
+    background-color: #202020;
+    border-color: #a9b665;
+    color: #a9b665;
+}

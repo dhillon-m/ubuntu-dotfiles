@@ -1,0 +1,56 @@
+/**
+ * @name Custom Theme
+ * @description pywal-generated Discord/Vesktop theme
+ * @author Dhillon
+ * @version 1.0.0
+ *
+ * Requires: https://github.com/mwittrien/BetterDiscordAddons (DiscordRecolor)
+ * Applied via: walcord -t ~/.config/walcord/template.css
+**/
+@import url(https://mwittrien.github.io/BetterDiscordAddons/Themes/DiscordRecolor/DiscordRecolor.css);
+:root {
+    --settingsicons: 0;
+    --font: "IosevkaTerm Nerd Font", "Iosevka Nerd Font", "gg sans", "Noto Sans";
+}
+.theme-dark {
+    --accentcolor:       KEY(2).rgb_values;
+    --accentcolor2:      KEY(3).rgb_values;
+    --linkcolor:         KEY(4).rgb_values;
+    --mentioncolor:      KEY(5).rgb_values;
+    --successcolor:      KEY(2).rgb_values;
+    --warningcolor:      KEY(6).rgb_values;
+    --dangercolor:       KEY(1).rgb_values;
+    --textbrightest:     KEY(foreground).rgb_values;
+    --textbrighter:      KEY(foreground).rgb_values;
+    --textbright:        KEY(foreground).rgb_values;
+    --textdark:          KEY(foreground).rgb_values;
+    --textdarker:        KEY(foreground).rgb_values;
+    --textdarkest:       KEY(8).rgb_values;
+    --backgroundaccent:  KEY(background).rgb_values;
+    --backgroundprimary: KEY(background).rgb_values;
+    --backgroundsecondary:    KEY(background).rgb_values;
+    --backgroundsecondaryalt: KEY(background).rgb_values;
+    --backgroundtertiary:     KEY(background).rgb_values;
+    --backgroundfloating:     KEY(background).rgb_values;
+}
+.theme-light {
+    --accentcolor:       KEY(4).rgb_values;
+    --accentcolor2:      KEY(4).rgb_values;
+    --linkcolor:         KEY(5).rgb_values;
+    --mentioncolor:      KEY(background).rgb_values;
+    --successcolor:      KEY(2).rgb_values;
+    --warningcolor:      KEY(3).rgb_values;
+    --dangercolor:       KEY(1).rgb_values;
+    --textbrightest:     KEY(foreground).rgb_values;
+    --textbrighter:      KEY(foreground).rgb_values;
+    --textbright:        KEY(foreground).rgb_values;
+    --textdark:          KEY(foreground).rgb_values;
+    --textdarker:        KEY(foreground).rgb_values;
+    --textdarkest:       KEY(8).rgb_values;
+    --backgroundaccent:      KEY(2).rgb_values;
+    --backgroundprimary:     KEY(2).rgb_values;
+    --backgroundsecondary:   KEY(2).rgb_values;
+    --backgroundsecondaryalt: KEY(2).rgb_values;
+    --backgroundtertiary:     KEY(background).rgb_values;
+    --backgroundfloating:     KEY(background).rgb_values;
+}

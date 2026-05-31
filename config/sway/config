@@ -1,0 +1,180 @@
+### Variables
+#
+    set $mod Mod4
+    set $left h
+    set $down j
+    set $up k
+    set $right l
+    set $term kitty
+    set $menu fuzzel
+
+    include /etc/sway/config-vars.d/*
+
+# ── CONFIGURE YOUR DISPLAYS ──────────────────────────────────────────────────
+# Run: swaymsg -t get_outputs   to find your output names
+# Run: swaymsg -t get_displays  for resolution info
+#
+# Example: single monitor
+#   output DP-1 position 0,0
+#
+# Example: dual monitor (primary landscape + secondary portrait rotated)
+#   output DP-3    position 1271,405
+#   output HDMI-A-1 transform 270 position 0,0 scale 0.85
+#
+# Wallpaper is managed by setwallpaper — it writes the bg lines below.
+# After first run, those lines will appear here automatically.
+#
+    output DP-3    position 1271,405
+    output HDMI-A-1 transform 270 position 0,0 scale 0.85
+    output DP-3     bg ~/.config/sway/wallpaper_main.jpg fill
+    output HDMI-A-1 bg ~/.config/sway/wallpaper_portrait.jpg fill
+
+# Workspace-to-output assignments (update output names to match yours)
+    workspace 1  output DP-3
+    workspace 3  output DP-3
+    workspace 5  output DP-3
+    workspace 7  output DP-3
+    workspace 9  output DP-3
+    workspace 2  output HDMI-A-1
+    workspace 4  output HDMI-A-1
+    workspace 6  output HDMI-A-1
+    workspace 8  output HDMI-A-1
+    workspace 10 output HDMI-A-1
+# ─────────────────────────────────────────────────────────────────────────────
+
+### Idle configuration
+#
+    # exec swayidle -w \
+    #          timeout 300 'gtklock' \
+    #          timeout 600 'swaymsg "output * power off"' \
+    #          resume 'swaymsg "output * power on"'
+
+### Input configuration
+#
+    input "type:keyboard" {
+        xkb_layout gb
+    }
+
+### Wayland screen sharing
+#
+    exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
+    exec systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+    exec systemctl --user start xdg-desktop-portal-wlr
+
+### Key bindings
+#
+    bindsym $mod+Return exec $term
+    bindsym $mod+Shift+q kill
+    bindsym $mod+d exec $menu
+    floating_modifier $mod normal
+    bindsym $mod+Shift+c reload
+    bindsym $mod+Shift+e exec ~/.config/sway/power-menu.sh
+
+# Moving around
+    bindsym $mod+$left  focus left
+    bindsym $mod+$down  focus down
+    bindsym $mod+$up    focus up
+    bindsym $mod+$right focus right
+    bindsym $mod+Left   focus left
+    bindsym $mod+Down   focus down
+    bindsym $mod+Up     focus up
+    bindsym $mod+Right  focus right
+
+    bindsym $mod+Shift+$left  move left
+    bindsym $mod+Shift+$down  move down
+    bindsym $mod+Shift+$up    move up
+    bindsym $mod+Shift+$right move right
+    bindsym $mod+Shift+Left   move left
+    bindsym $mod+Shift+Down   move down
+    bindsym $mod+Shift+Up     move up
+    bindsym $mod+Shift+Right  move right
+
+# Workspaces
+    bindsym $mod+1 workspace number 1
+    bindsym $mod+2 workspace number 2
+    bindsym $mod+3 workspace number 3
+    bindsym $mod+4 workspace number 4
+    bindsym $mod+5 workspace number 5
+    bindsym $mod+6 workspace number 6
+    bindsym $mod+7 workspace number 7
+    bindsym $mod+8 workspace number 8
+    bindsym $mod+9 workspace number 9
+    bindsym $mod+0 workspace number 10
+    bindsym $mod+Shift+1 move container to workspace number 1
+    bindsym $mod+Shift+2 move container to workspace number 2
+    bindsym $mod+Shift+3 move container to workspace number 3
+    bindsym $mod+Shift+4 move container to workspace number 4
+    bindsym $mod+Shift+5 move container to workspace number 5
+    bindsym $mod+Shift+6 move container to workspace number 6
+    bindsym $mod+Shift+7 move container to workspace number 7
+    bindsym $mod+Shift+8 move container to workspace number 8
+    bindsym $mod+Shift+9 move container to workspace number 9
+    bindsym $mod+Shift+0 move container to workspace number 10
+    bindsym $mod+Tab exec ~/.config/waybar/main/scripts/windows-menu.sh
+
+# Layout
+    bindsym $mod+b splith
+    bindsym $mod+v splitv
+    bindsym $mod+s layout stacking
+    bindsym $mod+w layout tabbed
+    bindsym $mod+e layout toggle split
+    bindsym $mod+f fullscreen
+    bindsym $mod+Shift+f fullscreen global
+    bindsym $mod+Shift+space floating toggle
+    bindsym $mod+space focus mode_toggle
+    bindsym $mod+a focus parent
+
+# Scratchpad
+    bindsym $mod+Shift+minus move scratchpad
+    bindsym $mod+minus scratchpad show
+
+# Resize mode
+    mode "resize" {
+        bindsym $left  resize shrink width  10px
+        bindsym $down  resize grow   height 10px
+        bindsym $up    resize shrink height 10px
+        bindsym $right resize grow   width  10px
+        bindsym Left   resize shrink width  10px
+        bindsym Down   resize grow   height 10px
+        bindsym Up     resize shrink height 10px
+        bindsym Right  resize grow   width  10px
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+    }
+    bindsym $mod+r mode "resize"
+
+# Screenshot
+    bindsym Print       exec grim -g "$(slurp)" - | wl-copy
+    bindsym $mod+Print  exec grim -g "$(slurp)" ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png
+
+### Autostart
+#
+    exec_always pkill waybar; true
+    exec_always sh -c "sleep 0.1 && \
+        waybar --config ~/.cache/wal/waybar-main.jsonc      --style ~/.config/waybar/main/style.css & \
+        waybar --config ~/.cache/wal/waybar-secondary.jsonc --style ~/.config/waybar/secondary/style.css"
+    exec mako
+    exec_always dbus-update-activation-environment --systemd QT_QPA_PLATFORMTHEME qt5ct
+
+    for_window [title="btop-float"] floating enable, move position center
+
+### Appearance
+#
+    gaps inner 5
+    gaps outer 0
+
+    include ~/.cache/wal/colors-sway
+
+    default_border normal 2
+    client.focused          $foreground $foreground $background $foreground $foreground
+    client.focused_inactive $background $background $foreground $background $background
+    client.unfocused        $background $background $foreground $background $background
+    client.urgent           $color1     $color1     $background $color1     $color1
+
+# Per-app opacity
+    for_window [app_id="kitty"]               opacity 0.95
+    for_window [class="Code"]                 opacity 0.95
+    for_window [app_id="org.gnome.Nautilus"]  opacity 0.95
+    for_window [app_id="thunar"]              opacity 0.95
+
+include /etc/sway/config.d/*

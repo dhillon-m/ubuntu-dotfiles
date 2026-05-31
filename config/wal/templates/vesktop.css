@@ -1,0 +1,25 @@
+:root {
+    --background-primary:          {background};
+    --background-secondary:        {background};
+    --background-secondary-alt:    {background};
+    --background-tertiary:         {background};
+    --background-accent:           {color8};
+    --background-floating:         {background};
+    --background-mobile-primary:   {background};
+    --background-mobile-secondary: {background};
+    --channeltextarea-background:  {background};
+    --text-normal:       {foreground};
+    --text-muted:        {color8};
+    --text-link:         {color4};
+    --interactive-normal:  {foreground};
+    --interactive-hover:   {color3};
+    --interactive-active:  {color2};
+    --interactive-muted:   {color1};
+    --header-primary:    {foreground};
+    --header-secondary:  {color8};
+    --brand-experiment:  {color4};
+    --scrollbar-thin-thumb: {foreground};
+    --scrollbar-thin-track: {color8};
+    --scrollbar-auto-thumb: {foreground};
+    --scrollbar-auto-track: {color8};
+}

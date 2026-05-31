@@ -1,0 +1,5 @@
+# Remap a specific mouse button to Left Shift via hwdb.
+# b*v3367p1970* matches by vendor/product — update if your device differs.
+# Find your device: evtest   or   cat /proc/bus/input/devices
+evdev:input:b*v3367p1970*
+ KEYBOARD_KEY_90004=leftshift

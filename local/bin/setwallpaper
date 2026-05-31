@@ -1,0 +1,125 @@
+#!/usr/bin/env python3
+"""
+Split a wallpaper across a multi-monitor Sway setup.
+
+Edit the MONITORS dict below to match your display configuration.
+Run: swaymsg -t get_outputs   to find output names and resolutions.
+"""
+import sys
+import os
+import subprocess
+import re
+from PIL import Image
+
+# ── CONFIGURE YOUR MONITORS ─────────────────────────────────────────────────
+# position: top-left corner in Sway coordinate space (matches sway config)
+# resolution: native pixel resolution
+# scale: output scale from sway config (1.0 = 100%)
+# transform: rotation in degrees (0, 90, 180, 270)
+# wallpaper_path: where the cropped image for this monitor is saved
+MONITORS = {
+    "DP-3": {
+        "position": (1271, 405),
+        "resolution": (2560, 1440),
+        "scale": 1.0,
+        "transform": 0,
+        "wallpaper_path": os.path.expanduser("~/.config/sway/wallpaper_main.jpg"),
+    },
+    "HDMI-A-1": {
+        "position": (0, 0),
+        "resolution": (1920, 1080),
+        "scale": 0.85,
+        "transform": 270,
+        "wallpaper_path": os.path.expanduser("~/.config/sway/wallpaper_portrait.jpg"),
+    },
+}
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+def sway_size(monitor):
+    """Return the effective size of an output in Sway coordinate space."""
+    w, h = monitor["resolution"]
+    scale = monitor["scale"]
+    transform = monitor["transform"]
+    if transform in (90, 270):
+        w, h = h, w
+    return int(w / scale), int(h / scale)
+
+
+def split_wallpaper(image_path):
+    img = Image.open(image_path)
+
+    canvas_w = max(m["position"][0] + sway_size(m)[0] for m in MONITORS.values())
+    canvas_h = max(m["position"][1] + sway_size(m)[1] for m in MONITORS.values())
+
+    print(f"Source: {img.size}  Canvas: {canvas_w}x{canvas_h}")
+
+    scale = max(canvas_w / img.width, canvas_h / img.height)
+    nw, nh = int(img.width * scale), int(img.height * scale)
+    scaled = img.resize((nw, nh), Image.LANCZOS)
+    x_off = (nw - canvas_w) // 2
+    y_off = (nh - canvas_h) // 2
+    canvas = scaled.crop((x_off, y_off, x_off + canvas_w, y_off + canvas_h))
+
+    for name, mon in MONITORS.items():
+        px, py = mon["position"]
+        sw, sh = sway_size(mon)
+        rw, rh = mon["resolution"]
+        transform = mon["transform"]
+
+        portion = canvas.crop((px, py, px + sw, py + sh))
+        if transform in (90, 270):
+            portion = portion.resize((rh, rw), Image.LANCZOS)
+        else:
+            portion = portion.resize((rw, rh), Image.LANCZOS)
+
+        out_path = mon["wallpaper_path"]
+        os.makedirs(os.path.dirname(out_path), exist_ok=True)
+        portion.save(out_path, quality=95)
+        print(f"  {name}: {portion.size} → {out_path}")
+
+    # Apply via swaymsg
+    for name, mon in MONITORS.items():
+        subprocess.run(["swaymsg", f"output {name} bg {mon['wallpaper_path']} fill"])
+
+    # Persist bg lines in sway config
+    sway_config = os.path.expanduser("~/.config/sway/config")
+    with open(sway_config) as f:
+        content = f.read()
+    for name, mon in MONITORS.items():
+        content = re.sub(
+            rf"output {re.escape(name)} bg .*",
+            f"output {name} bg {mon['wallpaper_path']} fill",
+            content,
+        )
+    with open(sway_config, "w") as f:
+        f.write(content)
+
+    print("Done.")
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: setwallpaper <image>")
+        print("       setwallpaper ~/Pictures/wallpapers/something.jpg")
+        print("       setwallpaper something   (looks in ~/Pictures/wallpapers/)")
+        sys.exit(1)
+
+    path = os.path.expanduser(sys.argv[1])
+
+    if not os.path.isabs(path):
+        walldir = os.path.expanduser("~/Pictures/wallpapers")
+        if os.path.exists(os.path.join(walldir, path)):
+            path = os.path.join(walldir, path)
+        else:
+            for ext in (".jpg", ".jpeg", ".png", ".webp"):
+                candidate = os.path.join(walldir, path + ext)
+                if os.path.exists(candidate):
+                    path = candidate
+                    break
+
+    if not os.path.exists(path):
+        print(f"Error: not found: {path}")
+        sys.exit(1)
+
+    split_wallpaper(path)

@@ -1,0 +1,64 @@
+@import "/home/dhillon/.cache/wal/colors-waybar.css";
+
+* {
+  padding: 0; margin: 0; min-height: 0;
+  border-radius: 0; border: none;
+  text-shadow: none; transition: none; box-shadow: none;
+}
+
+window#waybar {
+  color: @foreground;
+  background: none;
+  font-family: IosevkaTerm Nerd Font Propo;
+  font-size: 12pt;
+  font-weight: 900;
+}
+
+.modules-left, .modules-center, .modules-right {
+  padding: 3pt;
+  background: @background;
+}
+
+#window, #custom-network, #custom-vpn,
+#pulseaudio, #pulseaudio.muted,
+#custom-battery, #custom-battery.critical, #custom-battery.warning, #clock {
+  padding-right: 6pt;
+}
+
+#custom-windows {
+  color: @background; background: @color4;
+  border: 2pt solid @color12; padding: 0 6pt;
+}
+#custom-windows:hover { background-color: @color12; border-color: @color12; }
+
+#workspaces button {
+  color: @foreground; background: @background;
+  border: 2pt solid @foreground; margin-right: 3pt;
+  min-width: 0pt; padding: 0 3.75pt;
+}
+#workspaces button:last-child { margin-right: 0; }
+#workspaces button:hover { color: @background; background: @foreground; border-color: @foreground; }
+#workspaces button.visible, #workspaces button.active {
+  color: @background; border-color: @color10; background: @color2;
+}
+#workspaces button.urgent { color: @background; border-color: @color9; background: @color1; }
+
+#window  { border: 2pt solid @color5; }
+#tray    { border: 2pt solid @color6; padding: 0 6pt; }
+#clock   { border: 2pt solid @color4; }
+#clock:hover { color: @background; background: @color4; }
+
+#custom-network       { border: 2pt solid @color5; }
+#custom-network:hover { color: @background; background: @color5; }
+#custom-vpn           { border: 2pt solid @color3; }
+#custom-vpn:hover     { color: @background; background: @color3; }
+#pulseaudio           { border: 2pt solid @color4; }
+#pulseaudio:hover     { color: @background; background: @color4; }
+#pulseaudio.muted     { border: 2pt solid @color1; color: @color1; }
+#pulseaudio.muted:hover { color: @background; background: @color1; }
+#custom-battery       { border: 2pt solid @color2; }
+#custom-battery:hover { color: @background; background: @color2; }
+#custom-battery.critical, #custom-battery.charging-critical { border: 2pt solid @color1; }
+#custom-battery.critical:hover, #custom-battery.charging-critical:hover {
+  color: @background; background: @color1;
+}

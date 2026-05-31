@@ -1,0 +1,18 @@
+[Unit]
+Description=Jackett Daemon
+After=network.target
+
+[Service]
+SyslogIdentifier=jackett
+Restart=always
+RestartSec=5
+Type=simple
+User=%i
+Group=%i
+WorkingDirectory=/opt/Jackett
+Environment="DOTNET_EnableDiagnostics=0"
+ExecStart=/bin/sh "/opt/Jackett/jackett_launcher.sh"
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target
