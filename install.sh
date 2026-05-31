@@ -162,16 +162,26 @@ install_snaps() {
 build_fuzzel() {
     heading "fuzzel (build from source)"
 
-    if fuzzel --version 2>/dev/null | grep -qv "1\.9\|1\.10\|1\.11"; then
-        info "fuzzel already up to date — skipping"
-        return
-    fi
-
     sudo apt-get install -y \
         libwayland-dev wayland-protocols libxkbcommon-dev \
         libcairo2-dev libpango1.0-dev libpixman-1-dev \
         libpng-dev libjpeg-dev libwebp-dev librsvg2-dev \
         libdbus-1-dev scdoc pkg-config
+
+    # Ubuntu 24.04 ships pixman 0.42.2; fuzzel needs >= 0.46.0 — build it first
+    local pixman_ver
+    pixman_ver=$(pkg-config --modversion pixman-1 2>/dev/null || echo "0")
+    if [[ "$(printf '%s\n' "0.46.0" "$pixman_ver" | sort -V | head -1)" != "0.46.0" ]]; then
+        info "Building pixman from source (system has $pixman_ver, need >= 0.46.0)"
+        local tmp_px; tmp_px=$(mktemp -d)
+        git clone --depth 1 https://gitlab.freedesktop.org/pixman/pixman.git "$tmp_px/pixman"
+        meson setup --buildtype=release "$tmp_px/pixman" "$tmp_px/pixman/build"
+        ninja -C "$tmp_px/pixman/build"
+        sudo ninja -C "$tmp_px/pixman/build" install
+        sudo ldconfig
+        rm -rf "$tmp_px"
+        ok "pixman built and installed"
+    fi
 
     local tmp; tmp=$(mktemp -d)
     git clone --depth 1 https://codeberg.org/dnkl/fuzzel "$tmp/fuzzel"
