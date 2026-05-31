@@ -166,10 +166,9 @@ install_python() {
     pipx install pywal        || pipx upgrade pywal
     pipx install autotiling   || pipx upgrade autotiling
     pipx install anifetch-cli || pipx upgrade anifetch-cli
-    pipx install netorbit     || pipx upgrade netorbit
-    # pillow is a library imported directly by setwallpaper — inject into pipx
-    # envs that need it, and also install for the user python environment
+    # pillow is a library imported directly by setwallpaper
     pip3 install --user --break-system-packages pillow i3ipc python-xlib
+    pipx ensurepath
     ok "Python packages installed"
 }
 
