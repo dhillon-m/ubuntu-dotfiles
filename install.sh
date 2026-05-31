@@ -158,6 +158,30 @@ install_snaps() {
     ok "Snaps installed"
 }
 
+# ── 3b. Build fuzzel from source ─────────────────────────────────────────────
+build_fuzzel() {
+    heading "fuzzel (build from source)"
+
+    if fuzzel --version 2>/dev/null | grep -qv "1\.9\|1\.10\|1\.11"; then
+        info "fuzzel already up to date — skipping"
+        return
+    fi
+
+    sudo apt-get install -y \
+        libwayland-dev wayland-protocols libxkbcommon-dev \
+        libcairo2-dev libpango1.0-dev libpixman-1-dev \
+        libpng-dev libjpeg-dev libwebp-dev librsvg2-dev \
+        libdbus-1-dev scdoc pkg-config
+
+    local tmp; tmp=$(mktemp -d)
+    git clone --depth 1 https://codeberg.org/dnkl/fuzzel "$tmp/fuzzel"
+    meson setup --buildtype=release "$tmp/fuzzel" "$tmp/fuzzel/build"
+    ninja -C "$tmp/fuzzel/build"
+    sudo ninja -C "$tmp/fuzzel/build" install
+    rm -rf "$tmp"
+    ok "fuzzel $(fuzzel --version 2>&1) installed"
+}
+
 # ── 4. Python packages ───────────────────────────────────────────────────────
 install_python() {
     heading "Python packages"
@@ -357,6 +381,7 @@ main() {
     $skip_repos  || setup_repos
     $skip_apt    || install_apt
     $skip_snaps  || install_snaps
+    build_fuzzel
     install_python
     $skip_fonts  || install_fonts
     install_theme
