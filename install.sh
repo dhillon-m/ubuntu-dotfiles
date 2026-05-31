@@ -96,7 +96,7 @@ install_apt() {
 
         # Build tools + Python
         build-essential cmake meson ninja-build
-        python3 python3.12-venv python3-dev pipx
+        python3 python3-pip python3.12-venv python3-dev pipx
 
         # .NET 8
         dotnet-sdk-8.0
@@ -134,9 +134,15 @@ install_snaps() {
 # ── 4. Python packages ───────────────────────────────────────────────────────
 install_python() {
     heading "Python packages"
-    pip3 install --user pywal autotiling i3ipc python-xlib pillow
+    # Ubuntu 24.04 enforces PEP 668 — use pipx for CLI tools, pip with
+    # --break-system-packages only for libraries needed by scripts
+    pipx install pywal        || pipx upgrade pywal
+    pipx install autotiling   || pipx upgrade autotiling
     pipx install anifetch-cli || pipx upgrade anifetch-cli
     pipx install netorbit     || pipx upgrade netorbit
+    # pillow is a library imported directly by setwallpaper — inject into pipx
+    # envs that need it, and also install for the user python environment
+    pip3 install --user --break-system-packages pillow i3ipc python-xlib
     ok "Python packages installed"
 }
 
