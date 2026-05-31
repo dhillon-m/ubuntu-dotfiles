@@ -208,10 +208,19 @@ install_theme() {
     if [[ ! -d "$theme_dir" ]]; then
         local tmp; tmp=$(mktemp -d)
         git clone --depth 1 https://github.com/Fausto-Korpsvart/Gruvbox-GTK-Theme "$tmp/theme"
-        mkdir -p "$theme_dir"
-        cp -r "$tmp/theme/themes/Gruvbox-Material-Dark/." "$theme_dir/"
-        rm -rf "$tmp"
-        ok "GTK theme installed"
+        # Find the dark variant (name may vary slightly between repo versions)
+        local src
+        src=$(find "$tmp/theme/themes" -maxdepth 1 -type d -iname "*gruvbox*dark*" | head -1)
+        if [[ -z "$src" ]]; then
+            warn "Could not find Gruvbox-Material-Dark in repo — available themes:"
+            ls "$tmp/theme/themes/" || true
+            rm -rf "$tmp"
+        else
+            mkdir -p "$theme_dir"
+            cp -r "$src/." "$theme_dir/"
+            rm -rf "$tmp"
+            ok "GTK theme installed from $src"
+        fi
     else
         info "GTK theme already present — skipping"
     fi
