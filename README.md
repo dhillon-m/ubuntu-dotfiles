@@ -5,7 +5,7 @@ Full desktop configuration for a Sway/Wayland setup on Ubuntu 24.04. Covers apt 
 ## Quick Start
 
 ```bash
-git clone https://github.com/dhillon/ubuntu-dotfiles.git ~/ubuntu-dotfiles
+git clone https://github.com/dhillon-m/ubuntu-dotfiles.git ~/ubuntu-dotfiles
 cd ~/ubuntu-dotfiles
 chmod +x install.sh
 ./install.sh
