@@ -122,20 +122,20 @@ install_apt() {
         warn "gtklock not in apt repos. Build from: https://github.com/jovanlanik/gtklock"
     fi
 
-    # Vesktop (Discord client) — download latest .deb from GitHub releases
-    if ! dpkg -l vesktop &>/dev/null; then
+    # Vesktop (Discord client) — AppImage in ~/.local/bin/
+    local vd_dst="$HOME/.local/bin/vesktop.AppImage"
+    if [[ ! -f "$vd_dst" ]]; then
         local vd_ver
         vd_ver=$(curl -s https://api.github.com/repos/Vencord/Vesktop/releases/latest \
                   | grep '"tag_name"' | cut -d'"' -f4 | tr -d 'v')
-        local vd_deb="vesktop_${vd_ver}_amd64.deb"
         wget -q --show-progress \
-            -O "/tmp/$vd_deb" \
-            "https://github.com/Vencord/Vesktop/releases/download/v${vd_ver}/$vd_deb" \
-            && sudo dpkg -i "/tmp/$vd_deb" && rm "/tmp/$vd_deb" \
-            && ok "Vesktop installed" \
+            -O "$vd_dst" \
+            "https://github.com/Vencord/Vesktop/releases/download/v${vd_ver}/Vesktop-${vd_ver}.AppImage" \
+            && chmod +x "$vd_dst" \
+            && ok "Vesktop AppImage installed to $vd_dst" \
             || warn "Vesktop install failed — download manually from https://github.com/Vencord/Vesktop/releases"
     else
-        info "Vesktop already installed"
+        info "Vesktop AppImage already present"
     fi
 
     ok "APT packages installed"
