@@ -158,7 +158,38 @@ install_snaps() {
     ok "Snaps installed"
 }
 
-# ── 3b. Build fuzzel from source ─────────────────────────────────────────────
+# ── 3b. Build waybar from source ─────────────────────────────────────────────
+build_waybar() {
+    heading "waybar (build from source)"
+
+    # Ubuntu 24.04 ships waybar 0.9.24 which has broken :hover on non-button modules.
+    # Building from HEAD of master gives 0.10+ where this is fixed.
+    sudo apt-get install -y \
+        libgtk-3-dev libgtkmm-3.0-dev libsigc++-2.0-dev \
+        libpulse-dev \
+        libnl-3-dev libnl-genl-3-dev \
+        libdbusmenu-gtk3-dev \
+        libfmt-dev libspdlog-dev \
+        libupower-glib-dev \
+        libplayerctl-dev \
+        libevdev-dev libinput-dev libudev-dev \
+        libxkbregistry-dev
+
+    local tmp; tmp=$(mktemp -d)
+    git clone --depth 1 https://github.com/Alexays/Waybar "$tmp/waybar"
+    meson setup --buildtype=release \
+        -Dmpd=disabled \
+        -Dgps=disabled \
+        -Dlibevdev=disabled \
+        "$tmp/waybar" "$tmp/waybar/build"
+    ninja -C "$tmp/waybar/build"
+    sudo ninja -C "$tmp/waybar/build" install
+    sudo ldconfig
+    rm -rf "$tmp"
+    ok "waybar $(waybar --version 2>&1 | head -1) installed"
+}
+
+# ── 3c. Build fuzzel from source ─────────────────────────────────────────────
 build_fuzzel() {
     heading "fuzzel (build from source)"
 
@@ -305,6 +336,16 @@ link_dotfiles() {
         cp "${REPO}/config/fish/fish_variables" "$HOME/.config/fish/fish_variables"
     fi
 
+    # Machine-specific sway config (displays, workspaces, waybar launch)
+    local machine_conf="${REPO}/config/sway/machines/$(hostname).conf"
+    if [[ -f "$machine_conf" ]]; then
+        link_file "$machine_conf" "$HOME/.config/sway/local.conf"
+        ok "Machine config linked for $(hostname)"
+    else
+        warn "No machine config for $(hostname) — create ${machine_conf} from an existing example"
+        warn "Display, workspace, and waybar config will be missing until you do"
+    fi
+
     # setwallpaper script
     mkdir -p "$HOME/.local/bin"
     link_file "${REPO}/local/bin/setwallpaper" "$HOME/.local/bin/setwallpaper"
@@ -391,6 +432,7 @@ main() {
     $skip_repos  || setup_repos
     $skip_apt    || install_apt
     $skip_snaps  || install_snaps
+    build_waybar
     build_fuzzel
     install_python
     $skip_fonts  || install_fonts
@@ -403,15 +445,15 @@ main() {
     heading "Done — hardware-specific steps required"
     cat <<'EOF'
 
-  1. Display outputs — edit ~/.config/sway/config
-     Run:  swaymsg -t get_outputs
-     Set the correct output names, positions, scales, and workspace assignments.
+  1. Machine config — auto-linked from config/sway/machines/<hostname>.conf
+     If a warning appeared above, create that file for this machine.
+     Run:  swaymsg -t get_outputs   (inside a Sway session) to find output names.
 
   2. Wallpaper script — edit ~/.local/bin/setwallpaper
      Update the MONITORS dict to match your display names and resolutions.
 
   3. Lock screen — re-render gtklock style.css with correct output names:
-     The installed style.css uses "DP-3" and "HDMI-A-1" — edit to match yours.
+     Edit config/sway/machines/<hostname>.conf if gtklock bg is wrong.
 
   4. GPU bar widget — edit ~/.config/waybar/main/scripts/gpu.sh
      Run:  lspci | grep -i vga

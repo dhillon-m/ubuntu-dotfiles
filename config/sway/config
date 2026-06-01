@@ -10,36 +10,12 @@
 
     include /etc/sway/config-vars.d/*
 
-# ── CONFIGURE YOUR DISPLAYS ──────────────────────────────────────────────────
-# Run: swaymsg -t get_outputs   to find your output names
-# Run: swaymsg -t get_displays  for resolution info
+# ── MACHINE-SPECIFIC CONFIG ──────────────────────────────────────────────────
+# Display outputs, workspace assignments, and waybar launch are defined per-machine.
+# Repo: config/sway/machines/<hostname>.conf  →  symlinked to ~/.config/sway/local.conf
+# Add a new file there for each machine, then re-run: bash install.sh --dotfiles-only
 #
-# Example: single monitor
-#   output DP-1 position 0,0
-#
-# Example: dual monitor (primary landscape + secondary portrait rotated)
-#   output DP-3    position 1271,405
-#   output HDMI-A-1 transform 270 position 0,0 scale 0.85
-#
-# Wallpaper is managed by setwallpaper — it writes the bg lines below.
-# After first run, those lines will appear here automatically.
-#
-    output DP-3    position 1271,405
-    output HDMI-A-1 transform 270 position 0,0 scale 0.85
-    output DP-3     bg ~/.config/sway/wallpaper_main.jpg fill
-    output HDMI-A-1 bg ~/.config/sway/wallpaper_portrait.jpg fill
-
-# Workspace-to-output assignments (update output names to match yours)
-    workspace 1  output DP-3
-    workspace 3  output DP-3
-    workspace 5  output DP-3
-    workspace 7  output DP-3
-    workspace 9  output DP-3
-    workspace 2  output HDMI-A-1
-    workspace 4  output HDMI-A-1
-    workspace 6  output HDMI-A-1
-    workspace 8  output HDMI-A-1
-    workspace 10 output HDMI-A-1
+    include ~/.config/sway/local.conf
 # ─────────────────────────────────────────────────────────────────────────────
 
 ### Idle configuration
@@ -149,10 +125,6 @@
 
 ### Autostart
 #
-    exec_always pkill waybar; true
-    exec_always sh -c "sleep 0.1 && \
-        waybar --config ~/.cache/wal/waybar-main.jsonc      --style ~/.config/waybar/main/style.css & \
-        waybar --config ~/.cache/wal/waybar-secondary.jsonc --style ~/.config/waybar/secondary/style.css"
     exec mako
     exec_always dbus-update-activation-environment --systemd QT_QPA_PLATFORMTHEME qt5ct
 
