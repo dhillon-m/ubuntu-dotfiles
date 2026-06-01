@@ -1,7 +1,11 @@
 #!/bin/bash
 source ~/.cache/wal/colors.sh
 
-CHOICE=$(printf "⏻  Shutdown\n  Restart\n󰒲  Sleep\n  Lock\n  Log Out" | \
+CHOICE=$(printf "⏻  Shutdown
+  Restart
+󰒲  Sleep
+  Lock
+  Log Out" | \
     fuzzel --dmenu \
     --width=20 \
     --minimal-lines \
@@ -14,8 +18,8 @@ CHOICE=$(printf "⏻  Shutdown\n  Restart\n󰒲  Sleep\n  Lock\n  Log Out" | \
 
 case "$CHOICE" in
     "⏻  Shutdown")  systemctl poweroff ;;
-    "  Restart")   systemctl reboot ;;
+    "  Restart")   systemctl reboot ;;
     "󰒲  Sleep")     systemctl suspend ;;
-    "  Lock")      gtklock ;;
-    "  Log Out")   swaymsg exit ;;
+    "  Lock")      gtklock ;;
+    "  Log Out")   swaymsg exit ;;
 esac
