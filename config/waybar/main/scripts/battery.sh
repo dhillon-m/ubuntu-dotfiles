@@ -14,15 +14,17 @@ IDX=$(( CAPACITY * 9 / 100 ))
 ICON=${ICONS[$IDX]}
 
 if [[ "$STATUS" == "Charging" ]]; then
-    if (( CAPACITY <= 20 )); then CLASS="charging-critical"; BG="$color1"; ICON="󰢜"
-    elif (( CAPACITY <= 30 )); then CLASS="charging-warning";  BG="$color6"; ICON="󰢝"
-    else                             CLASS="charging";          BG="$color2"; ICON="󰂅"
+    if   (( CAPACITY <= 20 )); then CLASS="charging-critical"; BG="$color1"; ICON="󰢜"
+    elif (( CAPACITY <= 50 )); then CLASS="charging-warning";  BG="$color6"; ICON="󰢝"
+    elif (( CAPACITY <= 80 )); then CLASS="charging-low";      BG="$color3"; ICON="󰢝"
+    else                            CLASS="charging";           BG="$color2"; ICON="󰂅"
     fi
 elif [[ "$STATUS" == "Full" ]] || (( CAPACITY >= 99 )); then
     CLASS="full"; BG="$color2"
 elif (( CAPACITY <= 20 )); then CLASS="critical"; BG="$color1"
-elif (( CAPACITY <= 30 )); then CLASS="warning";  BG="$color6"
-else                             CLASS="good";     BG="$color3"
+elif (( CAPACITY <= 50 )); then CLASS="warning";  BG="$color6"
+elif (( CAPACITY <= 80 )); then CLASS="low";      BG="$color3"
+else                            CLASS="good";      BG="$color2"
 fi
 
 printf "%s\n" "{\"text\":\"<span color='$background' bgcolor='$BG' > $ICON </span> $CAPACITY%\",\"class\":\"$CLASS\"}"

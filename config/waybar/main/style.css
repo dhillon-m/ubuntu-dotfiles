@@ -140,17 +140,17 @@ window#waybar {
 #pulseaudio.muted       { border: 2pt solid @color1; color: @color1; }
 #pulseaudio.muted:hover { color: @background; background: @color1; }
 
-#custom-battery         { border: 2pt solid @color2; }
-#custom-battery:hover   { color: @background; background: @color2; }
-#custom-battery.critical, #custom-battery.charging-critical {
-  border: 2pt solid @color1;
-}
-#custom-battery.critical:hover, #custom-battery.charging-critical:hover {
-  color: @background; background: @color1;
-}
-#custom-battery.warning, #custom-battery.charging-warning {
-  border: 2pt solid @color6;
-}
-#custom-battery.warning:hover, #custom-battery.charging-warning:hover {
-  color: @background; background: @color6;
-}
+#custom-battery                    { border: 2pt solid @color2; }
+#custom-battery:hover              { color: @background; background: @color2; }
+#custom-battery.critical,
+#custom-battery.charging-critical  { border: 2pt solid @color1; }
+#custom-battery.critical:hover,
+#custom-battery.charging-critical:hover { color: @background; background: @color1; }
+#custom-battery.warning,
+#custom-battery.charging-warning   { border: 2pt solid @color6; }
+#custom-battery.warning:hover,
+#custom-battery.charging-warning:hover  { color: @background; background: @color6; }
+#custom-battery.low,
+#custom-battery.charging-low       { border: 2pt solid @color3; }
+#custom-battery.low:hover,
+#custom-battery.charging-low:hover { color: @background; background: @color3; }
