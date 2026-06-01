@@ -5,7 +5,7 @@
  */
 
 window#eDP-1 {
-    background-image: url("{HOME}/.config/sway/wallpaper_main.jpg");
+    background-image: url("HOME_PLACEHOLDER/.config/sway/wallpaper_main.jpg");
     background-size: cover;
     background-position: center;
 }
@@ -22,8 +22,12 @@ window#eDP-1 {
     margin-top: 0.5em;
 }
 
-#input-label { font-size: 0; }
-#window-box  { margin-top: 0em; }
+#input-label {
+    font-size: 0;
+}
+#window-box {
+    margin-top: 0em;
+}
 
 #input-field {
     background-color: {background};
@@ -35,7 +39,9 @@ window#eDP-1 {
     caret-color: {foreground};
 }
 
-#input-field:focus { border-color: {foreground}; }
+#input-field:focus {
+    border-color: {foreground};
+}
 
 #error-label {
     color: {color1};
