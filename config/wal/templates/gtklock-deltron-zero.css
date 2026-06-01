@@ -1,0 +1,57 @@
+/*
+ * deltron-zero (laptop) — single display: eDP-1
+ * Processed by pywal; {foreground} etc. are wal variables.
+ * Rendered to ~/.cache/wal/gtklock-deltron-zero.css
+ */
+
+window#eDP-1 {
+    background-image: url("{HOME}/.config/sway/wallpaper_main.jpg");
+    background-size: cover;
+    background-position: center;
+}
+
+* {
+    box-shadow: none;
+    font-family: "Iosevka Nerd Font Propo";
+}
+
+#clock-label {
+    font-size: 128px;
+    color: {foreground};
+    text-shadow: 2px 2px 8px {color0};
+    margin-top: 0.5em;
+}
+
+#input-label { font-size: 0; }
+#window-box  { margin-top: 0em; }
+
+#input-field {
+    background-color: {background};
+    color: {foreground};
+    border: 2px solid {foreground};
+    border-radius: 2px;
+    padding: 8px 16px;
+    min-width: 300px;
+    caret-color: {foreground};
+}
+
+#input-field:focus { border-color: {foreground}; }
+
+#error-label {
+    color: {color1};
+    font-family: "Iosevka Nerd Font Propo";
+}
+
+button {
+    background-color: {color0};
+    color: {foreground};
+    border: 2px solid {foreground};
+    border-radius: 2px;
+    font-family: "Iosevka Nerd Font Propo";
+}
+
+button:hover {
+    background-color: {background};
+    border-color: {color2};
+    color: {color2};
+}

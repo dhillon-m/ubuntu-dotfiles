@@ -7,7 +7,9 @@ find_hwmon() {
     done
 }
 
+# k10temp = AMD, coretemp = Intel
 CPU_DIR=$(find_hwmon "k10temp")
+[[ -z "$CPU_DIR" ]] && CPU_DIR=$(find_hwmon "coretemp")
 if [[ -z "$CPU_DIR" ]]; then
     printf "%s\n" "{\"text\":\"<span color='$foreground' bgcolor='$color8' >  </span> N/A\",\"class\":\"unknown\"}"
     exit 0

@@ -16,16 +16,36 @@ for d in /sys/class/hwmon/hwmon*; do
     fi
 done
 
-if [[ -z "$GPU_DIR" ]]; then
-    printf "%s\n" "{\"text\":\"<span color='$foreground' bgcolor='$color8' > 󰢮 </span> N/A\",\"class\":\"unknown\"}"
-    exit 0
+if [[ -n "$GPU_DIR" ]]; then
+    # ── AMD discrete GPU ──────────────────────────────────────────────────────
+    TEMP=$(( $(cat "$GPU_DIR/temp1_input") / 1000 ))
+    UTIL=$(cat "$GPU_DIR/device/gpu_busy_percent" 2>/dev/null || echo 0)
+else
+    # ── Intel integrated GPU (no amdgpu hwmon) ────────────────────────────────
+    # Utilisation: sample RC6 residency (idle/power-save state) over 500 ms.
+    # RC6 is cumulative ms the GPU spent idle; delta vs wall time = idle %.
+    GT="/sys/class/drm/card1/gt/gt0"
+    if [[ ! -f "$GT/rc6_residency_ms" ]]; then
+        printf "%s\n" "{\"text\":\"<span color='$foreground' bgcolor='$color8' > 󰢮 </span> N/A\",\"class\":\"unknown\"}"
+        exit 0
+    fi
+    rc6_1=$(cat "$GT/rc6_residency_ms")
+    sleep 0.5
+    rc6_2=$(cat "$GT/rc6_residency_ms")
+    delta_rc6=$(( rc6_2 - rc6_1 ))
+    # Active time = 500ms window minus time spent idle in RC6
+    active=$(( 500 - delta_rc6 ))
+    (( active < 0 )) && active=0
+    UTIL=$(( active * 100 / 500 ))
+    # Temperature: Intel iGPU shares the CPU die — use coretemp package sensor
+    for d in /sys/class/hwmon/hwmon*; do
+        [[ "$(cat "$d/name" 2>/dev/null)" == "coretemp" ]] && CORE_DIR="$d" && break
+    done
+    TEMP=$(( $(cat "${CORE_DIR:-/sys/class/hwmon/hwmon7}/temp1_input") / 1000 ))
 fi
 
-TEMP=$(( $(cat "$GPU_DIR/temp1_input") / 1000 ))
-UTIL=$(cat "$GPU_DIR/device/gpu_busy_percent" 2>/dev/null || echo 0)
-
 if (( TEMP >= 70 )); then
-    FORMAT="<span color='$background' bgcolor='$color1' >  </span> $UTIL%  $TEMP°C"
+    FORMAT="<span color='$background' bgcolor='$color1' > 󰢮 </span> $UTIL%  $TEMP°C"
     CLASS="critical"
 else
     FORMAT="<span color='$background' bgcolor='$color3' > 󰢮 </span> $UTIL%  $TEMP°C"
