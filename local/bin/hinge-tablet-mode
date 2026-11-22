@@ -13,6 +13,7 @@
 #   left-up  (cw  90deg):    x dominant, positive (~+1030000) -> transform 270
 
 import glob
+import os
 import subprocess
 import threading
 
@@ -79,7 +80,19 @@ def orientation_loop(stop_event, accel_dir):
     swaymsg("output", OUTPUT, "transform", "normal")
 
 
+def exit_with_sway():
+    # read_loop() blocks forever, so without this we outlive sway at logout and
+    # hold the login session open (stuck "closing"), which keeps the old systemd
+    # user manager alive and stops ~/.config/environment.d being re-read.
+    sock = os.environ.get("SWAYSOCK")
+    stop = threading.Event()
+    while sock and os.path.exists(sock):
+        stop.wait(5)
+    os._exit(0)
+
+
 def main():
+    threading.Thread(target=exit_with_sway, daemon=True).start()
     dev = find_hinge_switch()
     accel_dir = find_accel_dir()
     stop_event = None
