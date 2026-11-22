@@ -21,8 +21,9 @@
     "pulseaudio",
     "custom/battery"
   ],
+  // Modules configuration
   "custom/windows": {
-    "format": "<span ></span>",
+    "format": "<span ></span>",
     "on-click": "~/.config/waybar/main/scripts/windows-menu.sh",
     "tooltip": false
   },
@@ -45,7 +46,11 @@
       "10": "<span>♇</span>"
     },
     "persistent-workspaces": {
-      "2": [], "4": [], "6": [], "8": [], "10": []
+        "2": [],
+        "4": [],
+        "6": [],
+        "8": [],
+        "10": []
     }
   },
   "sway/window": {
@@ -54,7 +59,7 @@
     "tooltip": false
   },
   "sway/mode": {
-    "format": " {{}}",
+    "format": " {{}}",
     "max-length": 50,
     "tooltip": false
   },
@@ -62,9 +67,37 @@
     "icon-size": 14,
     "spacing": 8
   },
+  "disk": {
+    "format": "<span color='{background}' bgcolor='{color1}' >  </span> {{free}}",
+    "interval": 20,
+    "tooltip": false
+  },
+  "custom/cpu": {
+    "exec": "~/.config/waybar/main/scripts/cpu.sh",
+    "return-type": "json",
+    "interval": 2,
+    "format": "{{}}",
+    "tooltip": false,
+    "on-click": "~/.config/waybar/main/scripts/cpu-btop.sh"
+  },
+  "custom/gpu": {
+    "exec": "~/.config/waybar/main/scripts/gpu.sh",
+    "return-type": "json",
+    "interval": 2,
+    "format": "{{}}",
+    "tooltip": false,
+    "on-click": "~/.config/waybar/main/scripts/gpu-btop.sh"
+  },
+  "custom/memory": {
+    "exec": "~/.config/waybar/main/scripts/memory.sh",
+    "interval": 2,
+    "return-type": "json",
+    "format": "<span color='{background}' bgcolor='{color6}' >  </span> {{}}",
+    "on-click": "~/.config/waybar/main/scripts/mem-btop.sh"
+  },
   "pulseaudio": {
-    "format": "<span color='{background}' bgcolor='{color4}' >  </span> {{volume}}%",
-    "format-muted": "<span color='{background}' bgcolor='{color1}' >  </span> {{volume}}%",
+    "format": "<span color='{background}' bgcolor='{color4}' >  </span> {{volume}}%",
+    "format-muted": "<span color='{background}' bgcolor='{color1}' >  </span> {{volume}}%",
     "format-bluetooth": "<span color='{background}' bgcolor='{color4}' > 󰂰 </span> {{volume}}%",
     "format-bluetooth-muted": "<span color='{background}' bgcolor='{color1}' > 󰂲 </span> {{volume}}%",
     "format-source": "{{volume}}% ",
@@ -100,7 +133,7 @@
     "on-click-right": "~/.config/waybar/main/scripts/vpn-menu.sh"
   },
   "clock": {
-    "format": "<span color='{background}' bgcolor='{color4}' >  </span> {{:%a %d | %H:%M}}",
+    "format": "<span color='{background}' bgcolor='{color4}' >  </span> {{:%a %d | %H:%M}}",
     "tooltip": false,
     "interval": 1
   }
