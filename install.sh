@@ -90,6 +90,10 @@ install_apt() {
         qt6ct qt6-style-kvantum qt6-wayland qtwayland5
         qt5-gtk-platformtheme qt6-gtk-platformtheme
 
+        # Apps (apt build uses system Qt6, so it picks up qt6ct/Kvantum —
+        # the AppImage bundles its own Qt and stays unthemed)
+        qbittorrent vlc
+
         # Display / input utilities
         ddcutil i2c-tools read-edid
 
@@ -344,6 +348,8 @@ link_dotfiles() {
     link_file "${REPO}/config/gtk-4.0/settings.ini"   "$HOME/.config/gtk-4.0/settings.ini"
     link_file "${REPO}/config/btop/btop.conf"          "$HOME/.config/btop/btop.conf"
     link_file "${REPO}/config/qt5ct/qt5ct.conf"        "$HOME/.config/qt5ct/qt5ct.conf"
+    link_file "${REPO}/config/qt6ct/qt6ct.conf"        "$HOME/.config/qt6ct/qt6ct.conf"
+    link_file "${REPO}/config/environment.d/qt.conf"  "$HOME/.config/environment.d/qt.conf"
 
     # fish_variables: copy once (fish manages this file at runtime)
     if [[ ! -f "$HOME/.config/fish/fish_variables" ]]; then
@@ -486,10 +492,7 @@ main() {
   6. Jackett — download from https://github.com/Jackett/Jackett/releases
      Extract to /opt/Jackett, then re-run:  sudo systemctl enable --now jackett
 
-  7. qBittorrent AppImage — download from https://www.qbittorrent.org/download
-     Place at ~/.local/bin/qbittorrent.AppImage
-
-  8. Wallpapers — place images in ~/.config/sway/ or run:
+  7. Wallpapers — place images in ~/.config/sway/ or run:
      setwallpaper <image-path>
 
   Log out and back in to a Sway session to apply everything.
