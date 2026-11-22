@@ -26,7 +26,7 @@
     "custom/battery"
   ],
   "custom/windows": {
-    "format": "<span ></span>",
+    "format": "<span ></span>",
     "on-click": "~/.config/waybar/main/scripts/windows-menu.sh",
     "tooltip": false
   },
@@ -68,7 +68,7 @@
     "spacing": 8
   },
   "disk": {
-    "format": "<span color='{background}' bgcolor='{color1}' >  </span> {{free}}",
+    "format": "<span color='{background}' bgcolor='{color1}' >  </span> {{free}}",
     "interval": 20,
     "tooltip": false
   },
@@ -92,12 +92,12 @@
     "exec": "~/.config/waybar/main/scripts/memory.sh",
     "interval": 2,
     "return-type": "json",
-    "format": "<span color='{background}' bgcolor='{color6}' >  </span> {{}}",
+    "format": "<span color='{background}' bgcolor='{color6}' >  </span> {{}}",
     "on-click": "~/.config/waybar/main/scripts/mem-btop.sh"
   },
   "pulseaudio": {
-    "format": "<span color='{background}' bgcolor='{color4}' >  </span> {{volume}}%",
-    "format-muted": "<span color='{background}' bgcolor='{color1}' >  </span> {{volume}}%",
+    "format": "<span color='{background}' bgcolor='{color4}' >  </span> {{volume}}%",
+    "format-muted": "<span color='{background}' bgcolor='{color1}' >  </span> {{volume}}%",
     "format-bluetooth": "<span color='{background}' bgcolor='{color4}' > 󰂰 </span> {{volume}}%",
     "format-bluetooth-muted": "<span color='{background}' bgcolor='{color1}' > 󰂲 </span> {{volume}}%",
     "format-source": "{{volume}}% ",
@@ -133,7 +133,7 @@
     "on-click-right": "~/.config/waybar/main/scripts/vpn-menu.sh"
   },
   "clock": {
-    "format": "<span color='{background}' bgcolor='{color4}' >  </span> {{:%a %d | %H:%M}}",
+    "format": "<span color='{background}' bgcolor='{color4}' >  </span> {{:%a %d | %H:%M}}",
     "tooltip": false,
     "interval": 1
   }
