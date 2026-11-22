@@ -8,3 +8,6 @@ config/sway/wallpaper_*.jpg
 config/micro/buffers/
 config/micro/colorschemes/
 config/Kvantum/wal-kvantum/wal-kvantum.kvconfig
+
+# Python bytecode
+__pycache__/
