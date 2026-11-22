@@ -11,5 +11,4 @@ if status is-interactive
 
     set -x QT_QPA_PLATFORMTHEME qt5ct
 
-    alias vesktop="~/.local/bin/vesktop.AppImage"
 end
