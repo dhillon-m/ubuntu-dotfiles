@@ -304,6 +304,11 @@ link_dotfiles() {
     heading "Dotfiles"
 
     # Directory links (whole dir becomes a symlink)
+    # Keep this machine's wallpapers (gitignored, per machine) when a real
+    # ~/.config/sway dir is about to be replaced by the repo symlink
+    if [[ -d "$HOME/.config/sway" && ! -L "$HOME/.config/sway" ]]; then
+        cp -n "$HOME/.config/sway"/wallpaper_*.jpg "${REPO}/config/sway/" 2>/dev/null || true
+    fi
     link_dir "${REPO}/config/sway"    "$HOME/.config/sway"
     link_dir "${REPO}/config/kitty"   "$HOME/.config/kitty"
     link_dir "${REPO}/config/fuzzel"  "$HOME/.config/fuzzel"
@@ -316,6 +321,11 @@ link_dotfiles() {
     link_dir "${REPO}/config/micro"   "$HOME/.config/micro"
     link_dir "${REPO}/config/Kvantum" "$HOME/.config/Kvantum"
     link_dir "${REPO}/config/walcord" "$HOME/.config/walcord"
+
+    # wal-rendered colour files for micro and Kvantum (gitignored links into ~/.cache/wal)
+    mkdir -p "${REPO}/config/micro/colorschemes"
+    ln -sf "$HOME/.cache/wal/micro.micro"      "${REPO}/config/micro/colorschemes/micro.micro"
+    ln -sf "$HOME/.cache/wal/kvantum.kvconfig" "${REPO}/config/Kvantum/wal-kvantum/wal-kvantum.kvconfig"
 
     # wal sub-dirs (don't replace the whole ~/.config/wal — wal writes cache there)
     mkdir -p "$HOME/.config/wal"
