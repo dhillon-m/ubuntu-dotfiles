@@ -96,6 +96,9 @@ install_apt() {
         # CLI tools
         btop fastfetch micro chafa jq curl wget git
 
+        # Function keys (media / brightness)
+        brightnessctl playerctl
+
         # Media
         vlc ffmpeg imagemagick
 
