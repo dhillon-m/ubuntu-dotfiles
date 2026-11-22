@@ -269,26 +269,24 @@ install_fonts() {
 install_theme() {
     heading "Gruvbox-Material-Dark theme"
     local theme_dir="$HOME/.local/share/themes/Gruvbox-Material-Dark"
+    local icon_dir="$HOME/.local/share/icons/Gruvbox-Material-Dark"
 
-    if [[ ! -d "$theme_dir" ]]; then
+    if [[ ! -f "$theme_dir/index.theme" || ! -f "$icon_dir/index.theme" ]]; then
         local tmp; tmp=$(mktemp -d)
-        git clone --depth 1 https://github.com/Fausto-Korpsvart/Gruvbox-GTK-Theme "$tmp/theme"
-        # Find the dark variant (name may vary slightly between repo versions)
-        local src
-        src=$(find "$tmp/theme/themes" -maxdepth 1 -type d -iname "*gruvbox*dark*" | head -1)
-        if [[ -z "$src" ]]; then
-            warn "Could not find Gruvbox-Material-Dark in repo — available themes:"
-            ls "$tmp/theme/themes/" || true
-            rm -rf "$tmp"
-        else
-            mkdir -p "$theme_dir"
-            cp -r "$src/." "$theme_dir/"
-            rm -rf "$tmp"
-            ok "GTK theme installed from $src"
-        fi
+        git clone --depth 1 https://github.com/TheGreatMcPain/gruvbox-material-gtk "$tmp/gmg"
+        mkdir -p "$HOME/.local/share/themes" "$HOME/.local/share/icons"
+        rm -rf "$theme_dir" "$icon_dir"
+        cp -r "$tmp/gmg/themes/Gruvbox-Material-Dark" "$theme_dir"
+        cp -r "$tmp/gmg/icons/Gruvbox-Material-Dark" "$icon_dir"
+        gtk-update-icon-cache -f "$icon_dir" || true
+        rm -rf "$tmp"
+        ok "GTK + icon theme installed"
     else
-        info "GTK theme already present — skipping"
+        info "GTK + icon theme already present — skipping"
     fi
+
+    # Medium -> hard palette (bg #1d2021); no-op if already applied
+    bash "${REPO}/local/bin/gruvbox-material-hard" "$theme_dir"
 
     # Apply via gsettings (works in GNOME; Sway uses gtk-3.0/settings.ini directly)
     gsettings set org.gnome.desktop.interface gtk-theme         'Gruvbox-Material-Dark'
