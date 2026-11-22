@@ -384,6 +384,9 @@ link_dotfiles() {
 setup_system() {
     heading "System config"
 
+    # brightnessctl's udev rule makes backlight writable by the video group
+    sudo usermod -aG video "$USER"
+
     sudo cp "${REPO}/etc/udev/rules.d/60-ddcutil-i2c.rules" /etc/udev/rules.d/
     sudo cp "${REPO}/etc/udev/hwdb.d/99-mouse-remap.hwdb"   /etc/udev/hwdb.d/
     sudo systemd-hwdb update
