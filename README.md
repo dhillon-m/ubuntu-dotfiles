@@ -122,10 +122,7 @@ Colour schemes live in `config/wal/colorschemes/dark/`:
 
 | App | Source |
 |-----|--------|
-| ProtonVPN | https://protonvpn.com/support/linux-ubuntu-vpn-setup/ |
 | Jackett | https://github.com/Jackett/Jackett/releases → extract to `/opt/Jackett` |
-| qBittorrent | https://www.qbittorrent.org/download (AppImage → `~/.local/bin/qbittorrent.AppImage`) |
-| Vesktop | Installed via apt (in repos after adding key) |
 
 ---
 

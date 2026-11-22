@@ -60,6 +60,14 @@ setup_repos() {
         info "Added fastfetch PPA"
     fi
 
+    # Proton VPN repo (proton-vpn-cli; waybar vpn scripts call `protonvpn`)
+    if [[ ! -f /etc/apt/sources.list.d/protonvpn-stable.sources ]]; then
+        local pv; pv=$(mktemp --suffix=.deb)
+        wget -q -O "$pv" https://repo.protonvpn.com/debian/dists/stable/main/binary-all/protonvpn-stable-release_1.0.8_all.deb
+        sudo dpkg -i "$pv"; rm "$pv"
+        info "Added Proton VPN repo"
+    fi
+
     # Microsoft .NET repo
     if ! dpkg -l dotnet-sdk-8.0 &>/dev/null; then
         local tmp; tmp=$(mktemp)
@@ -90,9 +98,9 @@ install_apt() {
         qt6ct qt6-style-kvantum qt6-wayland qtwayland5
         qt5-gtk-platformtheme qt6-gtk-platformtheme
 
-        # Apps (apt build uses system Qt6, so it picks up qt6ct/Kvantum —
+        # Apps (apt qbittorrent uses system Qt6, so it picks up qt6ct/Kvantum —
         # the AppImage bundles its own Qt and stays unthemed)
-        qbittorrent vlc
+        qbittorrent proton-vpn-cli
 
         # Display / input utilities
         ddcutil i2c-tools read-edid
@@ -137,20 +145,30 @@ install_apt() {
         warn "gtklock not in apt repos. Build from: https://github.com/jovanlanik/gtklock"
     fi
 
-    # Vesktop (Discord client) — AppImage in ~/.local/bin/
-    local vd_dst="$HOME/.local/bin/vesktop.AppImage"
-    if [[ ! -f "$vd_dst" ]]; then
-        local vd_ver
+    # Vesktop (Discord client) — .deb from GitHub releases (installs a .desktop
+    # entry so fuzzel finds it; no apt repo, so re-run to upgrade)
+    if ! dpkg -s vesktop &>/dev/null; then
+        local vd_ver vd_deb
         vd_ver=$(curl -s https://api.github.com/repos/Vencord/Vesktop/releases/latest \
                   | grep '"tag_name"' | cut -d'"' -f4 | tr -d 'v')
-        wget -q --show-progress \
-            -O "$vd_dst" \
-            "https://github.com/Vencord/Vesktop/releases/download/v${vd_ver}/Vesktop-${vd_ver}.AppImage" \
-            && chmod +x "$vd_dst" \
-            && ok "Vesktop AppImage installed to $vd_dst" \
-            || warn "Vesktop install failed — download manually from https://github.com/Vencord/Vesktop/releases"
+        vd_deb=$(mktemp --suffix=.deb)
+        if wget -q --show-progress -O "$vd_deb" \
+            "https://github.com/Vencord/Vesktop/releases/download/v${vd_ver}/vesktop_${vd_ver}_amd64.deb"; then
+            sudo apt-get install -y "$vd_deb" && ok "Vesktop ${vd_ver} installed"
+        else
+            warn "Vesktop install failed — download manually from https://github.com/Vencord/Vesktop/releases"
+        fi
+        rm -f "$vd_deb"
     else
-        info "Vesktop AppImage already present"
+        info "Vesktop already installed"
+    fi
+
+    # walcord — applies the wal palette to Vesktop (called by wal postscript)
+    if ! command -v walcord &>/dev/null; then
+        wget -q -O "$HOME/.local/bin/walcord" \
+            https://github.com/Danrus1100/walcord/releases/download/2.10/walcord \
+            && chmod +x "$HOME/.local/bin/walcord" && ok "walcord installed" \
+            || warn "walcord install failed — see https://github.com/Danrus1100/walcord/releases"
     fi
 
     ok "APT packages installed"
@@ -487,7 +505,7 @@ main() {
      Update DISCRETE_PCI to your discrete GPU's PCI address.
      Intel integrated GPU is detected automatically via RC6 residency.
 
-  5. ProtonVPN — install from https://protonvpn.com/support/linux-ubuntu-vpn-setup/
+  5. Proton VPN — installed (CLI). Sign in once:  protonvpn signin
 
   6. Jackett — download from https://github.com/Jackett/Jackett/releases
      Extract to /opt/Jackett, then re-run:  sudo systemctl enable --now jackett
