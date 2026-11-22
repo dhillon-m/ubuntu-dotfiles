@@ -62,16 +62,24 @@ window#HDMI-A-1 #window-box {
     font-family: "Iosevka Nerd Font Propo";
 }
 
-button {
+button,
+button.suggested-action,
+button.suggested-action:not(:hover) {
+    background-image: none;
     background-color: {color0};
     color: {foreground};
     border: 2px solid {foreground};
     border-radius: 2px;
     font-family: "Iosevka Nerd Font Propo";
+    box-shadow: none;
+    outline: none;
 }
 
-button:hover {
+button:hover,
+button.suggested-action:hover {
+    background-image: none;
     background-color: {background};
     border-color: {color2};
     color: {color2};
+    box-shadow: none;
 }

@@ -28,10 +28,10 @@ dtotal=$(( total2 - total1 )); didle=$(( idle2 - idle1 ))
 
 if (( TEMP >= 70 )); then
     CLASS="critical"
-    FORMAT="<span color='$background' bgcolor='$color1' >  </span> $UTIL%  $TEMP°C"
+    FORMAT="<span color='$background' bgcolor='$color1' >  </span> $UTIL%  $TEMP°C"
 else
     CLASS="normal"
-    FORMAT="<span color='$background' bgcolor='$color2' >  </span> $UTIL%  $TEMP°C"
+    FORMAT="<span color='$background' bgcolor='$color2' >  </span> $UTIL%  $TEMP°C"
 fi
 
 printf "%s\n" "{\"text\":\"$FORMAT\",\"class\":\"$CLASS\"}"
