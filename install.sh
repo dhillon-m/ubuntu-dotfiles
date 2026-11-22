@@ -97,7 +97,7 @@ install_apt() {
         btop fastfetch micro chafa jq curl wget git
 
         # Function keys (media / brightness)
-        brightnessctl playerctl
+        brightnessctl playerctl wl-mirror
 
         # Media
         vlc ffmpeg imagemagick
