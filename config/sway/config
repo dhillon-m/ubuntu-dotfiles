@@ -146,7 +146,7 @@
 ### Autostart
 #
     exec mako
-    exec_always dbus-update-activation-environment --systemd QT_QPA_PLATFORMTHEME qt5ct
+    exec_always dbus-update-activation-environment --systemd QT_QPA_PLATFORMTHEME=qt5ct
 
     for_window [title="btop-float"] floating enable, move position center
 
