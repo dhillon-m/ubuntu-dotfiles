@@ -1,0 +1,103 @@
+#!/usr/bin/env python3
+# 360-hinge tablet-mode handling for deltron-zero: once the hinge passes ~200deg
+# the kernel's Intel HID driver flips SW_TABLET_MODE. We mirror Windows' behaviour:
+# disable the keyboard/touchpad and auto-rotate to whatever's upright.
+#
+# iio-sensor-proxy's AccelerometerOrientation stayed stuck on this HID sensor hub
+# (mount-matrix/location auto-detect both failed per its own logs), even though the
+# raw accel_3d channel tracks physical rotation cleanly. So we read it directly and
+# classify orientation ourselves, calibrated against this device's own axes:
+#   normal (top-up):        y dominant, negative (~-875000)
+#   bottom-up (180deg):      y dominant, positive (~+1018000)
+#   right-up (ccw 90deg):    x dominant, negative (~-963000)  -> transform 90
+#   left-up  (cw  90deg):    x dominant, positive (~+1030000) -> transform 270
+
+import glob
+import subprocess
+import threading
+
+import evdev
+
+KEYBOARD = "1:1:AT_Translated_Set_2_keyboard"
+TOUCHPAD = "1739:52602:DLL08B0:01_06CB:CD7A_Touchpad"
+TRACKPAD_MOUSE = "1739:52602:DLL08B0:01_06CB:CD7A_Mouse"
+OUTPUT = "eDP-1"
+HINGE_SWITCH_DEVICE = "Intel HID switches"
+ACCEL_NAME = "accel_3d"
+DOMINANT_THRESHOLD = 700_000
+
+
+def find_accel_dir():
+    for name_path in glob.glob("/sys/bus/iio/devices/iio:device*/name"):
+        with open(name_path) as f:
+            if f.read().strip() == ACCEL_NAME:
+                return name_path.rsplit("/", 1)[0]
+    raise RuntimeError(f"{ACCEL_NAME!r} iio device not found")
+
+
+def read_accel(accel_dir):
+    def read(axis):
+        with open(f"{accel_dir}/in_accel_{axis}_raw") as f:
+            return int(f.read())
+    return read("x"), read("y"), read("z")
+
+
+def classify_orientation(x, y, z):
+    if abs(x) >= abs(y) and abs(x) >= DOMINANT_THRESHOLD and abs(x) > abs(z):
+        return "270" if x > 0 else "90"
+    if abs(y) >= abs(x) and abs(y) >= DOMINANT_THRESHOLD and abs(y) > abs(z):
+        return "180" if y > 0 else "normal"
+    return None  # flat or mid-rotation - keep current transform
+
+
+def swaymsg(*args):
+    subprocess.run(["swaymsg", *args], check=False)
+
+
+def set_inputs_enabled(enabled):
+    state = "enabled" if enabled else "disabled"
+    for ident in (KEYBOARD, TOUCHPAD, TRACKPAD_MOUSE):
+        swaymsg("input", ident, "events", state)
+
+
+def find_hinge_switch():
+    for path in evdev.list_devices():
+        dev = evdev.InputDevice(path)
+        if dev.name == HINGE_SWITCH_DEVICE:
+            return dev
+    raise RuntimeError(f"{HINGE_SWITCH_DEVICE!r} input device not found")
+
+
+def orientation_loop(stop_event, accel_dir):
+    last = None
+    while not stop_event.is_set():
+        transform = classify_orientation(*read_accel(accel_dir))
+        if transform and transform != last:
+            swaymsg("output", OUTPUT, "transform", transform)
+            last = transform
+        stop_event.wait(0.3)
+    swaymsg("output", OUTPUT, "transform", "normal")
+
+
+def main():
+    dev = find_hinge_switch()
+    accel_dir = find_accel_dir()
+    stop_event = None
+    thread = None
+    for event in dev.read_loop():
+        if event.type != evdev.ecodes.EV_SW or event.code != evdev.ecodes.SW_TABLET_MODE:
+            continue
+        if event.value == 1:
+            set_inputs_enabled(False)
+            stop_event = threading.Event()
+            thread = threading.Thread(target=orientation_loop, args=(stop_event, accel_dir), daemon=True)
+            thread.start()
+        else:
+            if stop_event is not None:
+                stop_event.set()
+                thread.join(timeout=2)
+            set_inputs_enabled(True)
+
+
+if __name__ == "__main__":
+    main()

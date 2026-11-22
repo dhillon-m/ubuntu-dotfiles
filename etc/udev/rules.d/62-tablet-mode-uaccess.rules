@@ -1,0 +1,3 @@
+# Allow non-root access to switch-class input devices (lid, hinge/tablet-mode)
+# so sway's hinge-tablet-mode script can read them without root or group membership.
+SUBSYSTEM=="input", ENV{ID_INPUT_SWITCH}=="1", TAG+="uaccess"
