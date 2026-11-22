@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+# Shift the Gruvbox-Material-Dark GTK theme (medium palette, bg #282828)
+# to the hard palette (bg #1d2021). Idempotent via a marker file.
+set -euo pipefail
+
+theme_dir="${1:-$HOME/.local/share/themes/Gruvbox-Material-Dark}"
+marker="$theme_dir/.gruvbox-hard"
+
+[[ -f "$theme_dir/index.theme" ]] || { echo "No theme at $theme_dir" >&2; exit 1; }
+[[ -f "$marker" ]] && { echo "Already hard: $theme_dir"; exit 0; }
+
+python3 -I - "$theme_dir" <<'EOF'
+import pathlib, re, sys
+
+root = pathlib.Path(sys.argv[1])
+
+# Anchors from the gruvbox-material palette (medium -> hard)
+fixed = {"282828": "1d2021", "32302f": "282828", "3c3836": "32302f", "1e1c1b": "141617"}
+# Other warm dark greys in the theme: same offset as bg0 (-11, -8, -7)
+shift = ["282625", "363431", "3d3a35", "423d3a", "443f3c", "46413e",
+         "48433e", "48433f", "4a463e", "4e4842", "5c554a"]
+
+def shifted(h):
+    r, g, b = (int(h[i:i+2], 16) for i in (0, 2, 4))
+    return "%02x%02x%02x" % (max(r-11, 0), max(g-8, 0), max(b-7, 0))
+
+hexmap = dict(fixed, **{h: shifted(h) for h in shift})
+rgbmap = {tuple(int(k[i:i+2], 16) for i in (0, 2, 4)):
+          tuple(int(v[i:i+2], 16) for i in (0, 2, 4)) for k, v in hexmap.items()}
+
+hex_re = re.compile(r"#(" + "|".join(hexmap) + r")\b", re.I)
+rgb_re = re.compile(r"(rgba?\(\s*)(\d+)\s*,\s*(\d+)\s*,\s*(\d+)")
+
+def sub_rgb(m):
+    key = tuple(int(x) for x in m.group(2, 3, 4))
+    if key not in rgbmap:
+        return m.group(0)
+    return m.group(1) + ", ".join(map(str, rgbmap[key]))
+
+changed = 0
+for p in root.rglob("*"):
+    if not p.is_file() or p.is_symlink() or p.suffix.lower() in {".png", ".crx"}:
+        continue
+    try:
+        s = p.read_text()
+    except UnicodeDecodeError:
+        continue
+    n = hex_re.sub(lambda m: "#" + hexmap[m.group(1).lower()], s)
+    n = rgb_re.sub(sub_rgb, n)
+    if n != s:
+        p.write_text(n)
+        changed += 1
+print(f"Recoloured {changed} files")
+EOF
+
+touch "$marker"
+echo "Gruvbox-Material-Dark is now hard contrast"
