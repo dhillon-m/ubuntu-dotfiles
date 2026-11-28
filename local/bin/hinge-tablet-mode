@@ -12,6 +12,7 @@
 #   right-up (ccw 90deg):    x dominant, negative (~-963000)  -> transform 90
 #   left-up  (cw  90deg):    x dominant, positive (~+1030000) -> transform 270
 
+import fcntl
 import glob
 import os
 import subprocess
@@ -62,11 +63,24 @@ def set_inputs_enabled(enabled):
 
 
 def find_hinge_switch():
-    for path in evdev.list_devices():
-        dev = evdev.InputDevice(path)
-        if dev.name == HINGE_SWITCH_DEVICE:
-            return dev
-    raise RuntimeError(f"{HINGE_SWITCH_DEVICE!r} input device not found")
+    # intel-hid only registers the switches device on the first hinge event
+    # ("switch event received, enable switches supports"), which can be long
+    # after login - so wait for it rather than bailing out.
+    while True:
+        for path in evdev.list_devices():
+            dev = evdev.InputDevice(path)
+            if dev.name == HINGE_SWITCH_DEVICE:
+                return dev
+        threading.Event().wait(2)
+
+
+def tablet_mode_active(dev):
+    # EVIOCGSW: current switch bitmask, so a fold that happened before we
+    # opened the device (e.g. the one that created it) isn't missed.
+    buf = bytearray(8)
+    fcntl.ioctl(dev.fd, 0x80000000 | (len(buf) << 16) | (ord("E") << 8) | 0x1B, buf)
+    code = evdev.ecodes.SW_TABLET_MODE
+    return bool(buf[code // 8] & (1 << (code % 8)))
 
 
 def orientation_loop(stop_event, accel_dir):
@@ -97,10 +111,18 @@ def main():
     accel_dir = find_accel_dir()
     stop_event = None
     thread = None
-    for event in dev.read_loop():
-        if event.type != evdev.ecodes.EV_SW or event.code != evdev.ecodes.SW_TABLET_MODE:
-            continue
-        if event.value == 1:
+
+    def events():
+        if tablet_mode_active(dev):
+            yield 1
+        for event in dev.read_loop():
+            if event.type == evdev.ecodes.EV_SW and event.code == evdev.ecodes.SW_TABLET_MODE:
+                yield event.value
+
+    for value in events():
+        if value == 1:
+            if stop_event is not None:
+                continue
             set_inputs_enabled(False)
             stop_event = threading.Event()
             thread = threading.Thread(target=orientation_loop, args=(stop_event, accel_dir), daemon=True)
@@ -109,6 +131,7 @@ def main():
             if stop_event is not None:
                 stop_event.set()
                 thread.join(timeout=2)
+                stop_event = None
             set_inputs_enabled(True)
 
 
